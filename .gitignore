@@ -36,6 +36,6 @@ pom.xml.versionsBackup
 release.properties
 
 # App
-calculator-ui/node-modules
+calculator-ui/node_modules
 calculator-backend/target
 
