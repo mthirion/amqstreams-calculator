@@ -1,0 +1,50 @@
+
+div.plane {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: stretch;
+    border: 5px solid blue;
+}
+div.planeleft {
+    width: 50%;
+    margin: 5px;
+}
+div.planeright {
+    width: 50%;
+    margin: 5px;
+}
+
+div.settings {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: stretch;
+    border: 3px dotted lightblue;
+}
+div.sleft {
+    width: 50%;
+}
+div.sright {
+    width: 50%;
+}
+
+table {
+    margin: auto;
+    width: 80%;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+th, td {
+    border: 2px solid green;
+    border-spacing: 30px;
+    margin: 0;
+}
+th {
+    text-align: center;
+}
+div.warnings {
+    display: block;
+    text-align: center;
+    border: 3px solid red;
+}

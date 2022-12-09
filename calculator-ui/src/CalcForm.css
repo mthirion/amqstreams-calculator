@@ -1,0 +1,122 @@
+.container {
+    margin: auto;
+}
+div.frame {
+    display: flex;
+    align-items: stretch;
+    border: 2px solid black;
+}
+div.form {
+    width: 50%;
+    height: 100%;
+}
+div.doc {
+    width: 50%;
+    border-left: 1px dotted blue;
+}
+
+#diskautodiv {
+    border: 1px dotted black;
+    margin: 20px;
+}
+
+
+h2 {
+   width: 100%;
+   margin: 0;
+   padding: 0;
+   font-size: 14;
+   color: #000000;
+   background-color: #ccc;   
+   text-align: center;
+}
+h2.doc {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    color: #000000;
+    background-color: lightblue;   
+    text-align: center;
+ }
+
+h1.result {
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: orange;
+    width: 100%;
+}
+input { 
+    text-align: right; 
+}
+
+div.align-absthroughput {
+    float: left;
+}
+
+div.align-custthroughput {
+    float: left;
+}
+
+.space-units {
+    margin-left: 20px;
+}
+.space-nbmessages {
+    margin-left: 24px;
+}
+.space-throughput {
+    margin-left: 90px;
+}
+
+.net-space {
+    margin-left: 90px;
+}
+.disk-space {
+    margin-left: 10px;
+}
+
+.disk-space-first {
+    margin-left: 20px;
+}
+.cg-space, .lag-space, .ha-space, .ex-space {
+    margin-left: 25px;
+}
+.cg-space-plus {
+    margin-left: 138px;
+}
+.ha-space-plus {
+    margin-left: 45px;
+}
+.ha-space-pp {
+    margin-left: 125px;
+}
+.ex-space-align {
+    margin-left: 50px;
+}
+.ex-space-align-plus {
+    margin-left: 53px;
+}
+.ex-space-align-pp {
+    margin-left: 67px;
+}
+.ch-space {
+    float: left;
+    margin-left: 20px;
+    vertical-align: bottom;
+}
+.label-space {
+    margin-left: 5px;
+}
+.label-space-align {
+    margin-left: 25px;
+}
+.label-space-plus {
+    margin-left: 100px;
+}
+.label-space-plus-align {
+    margin-left: 206px;
+}
+div.sslcheck {
+    float: left;
+}
