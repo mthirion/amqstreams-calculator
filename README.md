@@ -18,8 +18,9 @@ The UI opens the port 3000 locally, and contact the backend on the port 8090, st
 To run the tool:
 - clone this repository
 - cd into the calculator-backend directory and launch the backend with 'mvn quarkus:dev'
-- cd into the calculator-ui directory and launch the UI with 'npm start'
-- open a web browser on 'localhost:3000'.  The form is designed to be prefilled so that a simple computation can trigger immediately with the example parameters set.
+- cd into the calculator-ui directory, ensure all dependencies are there running 'npm install'; then launch the UI with 'npm start'
+- open a web browser on 'localhost:3000'.  
+  the form is designed to be prefilled so that a simple computation can trigger immediately with the example parameters set.
 
 ## Current status
 This is still a beta version under test, and all the features might not work.
