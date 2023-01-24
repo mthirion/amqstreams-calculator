@@ -31,15 +31,15 @@ class KafkaClusterDetails extends Component {
             overload_str+="\n";
           });
 
-        var maxlag=0;
-        var avglag=0;
+        var maxlag=this.props.cluster_maxlag + " sec";        
         if (this.props.cluster_maxlag > 180) {
            var mod = this.props.cluster_maxlag % 60;
-           maxlag = parseInt(this.props.cluster_maxlag / 60) + "min " + parseInt(mod) + "\"";
+           maxlag = parseInt(this.props.cluster_maxlag / 60) + "min " + parseInt(mod) + "'";
         }
+        var avglag=this.props.cluster_avglag + " sec";        
         if (this.props.cluster_avglag > 180) {
           var mod = this.props.cluster_avglag % 60;
-          avglag = parseInt(this.props.cluster_avglag / 60) + "min " + parseInt(mod) + "\"";
+          avglag = parseInt(this.props.cluster_avglag / 60) + "min " + parseInt(mod) + "'";
        }
 
         return (
@@ -52,8 +52,10 @@ class KafkaClusterDetails extends Component {
                   {/*Conditional rendering*/}
                   {this.props.cluster_overload != null && 
                     <p>{overload_str} </p>
-                  }          
+                  }  
+                  {this.props.cluster_overload == null &&           
                   <p>No warnings</p>
+                }
               </div>              
             </div>     
             <br/><br/>                 
@@ -113,23 +115,21 @@ class KafkaClusterDetails extends Component {
                     </tr>
                   </thead>
                   <tbody>
-                    {/*Conditional rendering*/}
-                    {overload_str != "" &&
-                            <tr>
-                              <td>Cluster overload</td>
-                              <td>{overload_str} || none</td>
-                            </tr>            
-                          }                  
+                
                     <tr>
-                        <td>Persistent storage</td>
+                        <td>Total persistent storage</td>
                         <td>{this.props.cluster_sto}</td>     
                     </tr>
+                    <tr>
+                        <td>Persistent storage per broker node</td>
+                        <td>{this.props.cluster_nsto}</td>     
+                    </tr>                    
                     <tr>
                         <td>Replication factor</td>
                         <td>{this.props.t_replicas}</td> 
                     </tr>                                     
                     <tr>
-                        <td>Insync replicas</td>                   
+                        <td>In-sync replicas</td>                   
                         <td>{this.props.t_insync}</td>
                     </tr>              
                   </tbody>
@@ -161,11 +161,11 @@ class KafkaClusterDetails extends Component {
                         <td>{this.props.cluster_maxout} MB/s</td>     
                     </tr>  
                     <tr>
-                        <td>Average lag time</td>
+                        <td>Possible Lag</td>
                         <td>{avglag}</td>     
                     </tr>                       
                     <tr>
-                        <td>Max lag at peak time</td>
+                        <td>Max possible lag at peak time</td>
                         <td>{maxlag}</td>     
                     </tr>                                                                   
                   </tbody>

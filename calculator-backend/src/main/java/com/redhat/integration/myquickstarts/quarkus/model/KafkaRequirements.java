@@ -234,6 +234,33 @@ public class KafkaRequirements {
         this.useshare = useshare;
     }
 
+    @Override
+    public String toString() {
+
+        String str = "inbound throunghput : " + inthroughput + "\n"; 
+        str += "nb topics : " + nbtopics + "\n"; 
+        str += "nb partitions :  " + nbpartitions + "\n"; 
+        str += "nb replicas : " + replicas + "\n"; 
+        str += "network : " + netspeed + " (saturation = " + netsat + ")\n"; 
+        str += "disk : "  + diskspeed + " (saturation = " + disksat + " ; type = " +  disktype + " ; number = " +  nbdisks + ")\n";   
+        str += "nb consumers : " + consumers + "\n"; 
+        str += "lag time : " + lagtime + "\n"; 
+        str += "inbound throughput = " + inthroughput + "\n"; 
+        str += "fault tolerannce on zookeeper : " + faulttolerance + "\n"; 
+        str += "throughput tolerance on brokers : " + throughputtolerance + "\n"; 
+        str += "deviation factor : " + deviation + "\n"; 
+        str += "security margin : " + margin + "\n"; 
+        str += "storage retention period : " + retention + "\n"; 
+
+        str += "mirror maker enabled : " + mm + "\n"; 
+        str += "ssl enabled : " + ssl + "\n"; 
+        str += "compaction enabled : " + compaction + "\n"; 
+        str += "use CPU share enabled : " + useshare + "\n"; 
+        str += "CPU share value : " + cpushare + "\n"; 
+        str += "hard partition limit : " + limit + "\n\n"; 
+
+        return str;
+    }
  
 
 }

@@ -20,6 +20,7 @@ public class KafkaClusterDesc {
     private int maxlag;
     private int avglag;
     private String storage;
+    private String nodeStorage;
 
     private boolean ssl;
     private boolean compaction;
@@ -156,5 +157,13 @@ public class KafkaClusterDesc {
 
     public void setAvglag(int avglag) {
         this.avglag = avglag;
+    }
+
+    public String getNodeStorage() {
+        return nodeStorage;
+    }
+
+    public void setNodeStorage(String nodeStorage) {
+        this.nodeStorage = nodeStorage;
     }
 }

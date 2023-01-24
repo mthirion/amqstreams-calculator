@@ -64,6 +64,7 @@ class CalcForm extends Component {
 
   initResponseStates() {
     this.state.resp_storage=0;
+    this.state.resp_nstorage=0;
     
     this.state.resp_brokercpu=0;
     this.state.resp_nbbroker=0;
@@ -314,7 +315,9 @@ class CalcForm extends Component {
                            Indeed, a certain amount of historical data can be kept in the page cache for fast redelivery, 
                            without the need to read back from the disk, which is an heavier operation.<br/>
                            The value is a fixed number of second. <br/>
-                           Example of RTO for common deployment types can also be used.</p>                  
+                           Example values for common deployment types (pod, vm...) are also provided.<br/>
+                           Notice that the computation happens against the peak throughput.<br/>
+                           Also, the lag is not an exact value as it covers the data from all the partitions active of each node.</p>                  
                     </div>                    
                 </div>
                 <br/>
@@ -324,12 +327,12 @@ class CalcForm extends Component {
                     <div class="form" >
                         <h2>Reliability enforcement</h2><br/>
                         <label class="label-space-align" for="replicas">Replication factor</label>
-                        <input class="ha-space" type="number" name="replicas" id="replicas" min="1" max="5" defaultValue="3" /> 
+                        <input class="ha-space" type="number" name="replicas" id="replicas" min="1" max="7" defaultValue="3" /> 
                         <br/>    
                         <label class="label-space-align" for="zkha">Fault tolerance (maintenance mode)</label>
                         <input class="ha-space" type="number" name="akha" id="zkha" min="0" max="2" defaultValue="0" /><br/>   
                         <label class="label-space-align" for="extranode">Throughput tolerance</label>
-                        <input class="ha-space-pp" type="number" name="extranode" id="extranode" min="0" max="20" defaultValue="1" /> 
+                        <input class="ha-space-pp" type="number" name="extranode" id="extranode" min="0" max="5" defaultValue="1" /> 
                         <br/>
                         <label class="label-space-align" for="deviation">Peak Deviation</label>
                         <input class="ha-space" type="number" name="deviation" id="deviation" min="1" max="1000" defaultValue="80" onChange={this.updateDeviation}/>  
@@ -369,7 +372,7 @@ class CalcForm extends Component {
                      
                     <div class="doc">
                         <h2 class="doc">How to configure MM ?</h2> <br/>
-                        <p>Mirror maker<br/>    
+                        <p>TO DO<br/>    
                         </p>                  
                     </div>                    
                 </div>
@@ -448,6 +451,7 @@ class CalcForm extends Component {
                 <div>
                     <KafkaClusterDetails
                         cluster_sto={this.state.resp_storage}
+                        cluster_nsto={this.state.resp_nstorage}
                         
                         broker_cpu={this.state.resp_brokercpu}
                         broker_nb={this.state.resp_brokernb}
@@ -761,6 +765,7 @@ class CalcForm extends Component {
       .then((data) => {
           console.log(data);
           this.state.resp_storage=data.storage;
+          this.state.resp_nstorage=data.nodeStorage;
           
           this.state.resp_brokercpu=data.node.cpu;
           this.state.resp_brokernb=data.node.numnodes;
