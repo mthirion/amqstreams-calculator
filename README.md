@@ -1,57 +1,72 @@
 # A tool to compute the initial size of an AMQ Streams cluster
 
+## Disclaimer
+The tool is a fork of :   https://github.com/AndyYuen/kafka-sizing/  
+,which is available here:  https://kafkasizing.azurewebsites.net/size
+
+### Reason of the fork
+The above tool leverages Spring MVC.  
+The  present fork is a refactored version that uses a javascript UI and a Quarkus backend.  
+It also integrates a few new capabilities.  
+
 
 ## Purpose
-While asserting the performance of an AMQ Streams cluster can really only be done with real-life testing, it would still be nice to be able to anticipate what an AMQ Streams-based solution would cost in terms of hardware and subscriptions.
-This tool is aimed at providing a relatively good estimate of what the target AMQ Streams cluster would look like, based on use case information.
+Defining the exact sizing of an AMQ Streams cluster can really only be the result of a thorough testing exercise.  
+However, it would really be nice to be able to anticipate what an AMQ Streams-based solution would cost.  
+This tool what this tool is about.  It's aimed at providing a relatively good estimate of what a target AMQ Streams solution would look like in terms of infrastuctre.
 
 
 ## Compute rational
-The rational behind the computation, which will also provide more information about all the parameters that the tool accept, are detailed in the pdf file located into the docs directory.
+The rational behind the computation, described with an example, can be found in the docs directory or here:  
+[guide](guide.md)
 
 
 ## Running the tool
 
-The calculator is composed of 2 parts: a ReactJS-based UI and a quarkus-based ReST API backend.
-The UI opens the port 3000 locally, and contact the backend on the port 8090, still locally.
+The calculator is composed of 2 parts:  
+ - a ReactJS-based UI
+ - a quarkus-based ReST API backend  
+
+The UI opens the port 3000 locally, and contact the backend on the port 8090, (still locally).
 
 To run the tool:
 - clone this repository
-- cd into the calculator-backend directory and launch the backend with 'mvn quarkus:dev'
-- cd into the calculator-ui directory, ensure all dependencies are there running 'npm install'; then launch the UI with 'npm start'
-- open a web browser on 'localhost:3000'.  
-  the form is designed to be prefilled so that a simple computation can trigger immediately with the example parameters set.
+- cd into the calculator-backend directory and run:  
+    - _mvn quarkus:dev_  
+- cd into the calculator-ui directory and run: 
+    - _npm install_   
+    - _npm start_  
+- open a web browser on 'localhost:3000'
 
-## Current status
-This is still a beta version under test, and all the features might not work.
-The computation of the sizing of the KafkaConnect connectors and a full MirrorMaker still has to be implemented.
+The form comes prefilled so a simple demo computation can be triggered immediately.
+
 
 ## Troubleshooting
-The Quarkus backends prints the values of the input parameters it receives from the UI.
+The Quarkus backends prints the values of the input parameters it receives from the UI.  
 It then prints the result of each computation.
 
 ### Log example
 ----- Input parameters -----  
-inbound throunghput : 100.0  
-nb topics : 100  
-nb partitions :  300  
-nb replicas : 3  
-network : 10 (saturation = 80)  
-disk : 400 (saturation = 80 ; type = ssd ; number = 1)  
-nb consumers : 5  
-lag time : 30  
-inbound throunghput = 100.0  
-fault tolerannce on zookeeper : 0  
-throughput tolerance on brokers : 1  
-deviation factor : 80  
-security margin : 25  
-storage retention period : 5  
-mirror maker enabled : false  
-ssl enabled : false  
-compaction enabled : false  
-use CPU share enabled : false  
-CPU share value : 0.1  
-hard partition limit : 500  
+inbound throunghput : 100.0
+nb topics : 100
+nb partitions :  300
+nb replicas : 3
+network : 10 (saturation = 80)
+disk : 400 (saturation = 80 ; type = ssd ; number = 1)
+nb consumers : 5
+lag time : 30
+inbound throunghput = 100.0
+fault tolerannce on zookeeper : 0
+throughput tolerance on brokers : 1
+deviation factor : 80
+security margin : 25
+storage retention period : 5
+mirror maker enabled : false
+ssl enabled : false
+compaction enabled : false
+use CPU share enabled : false
+CPU share value : 0.1
+hard partition limit : 500
 
 
 ----- Computation started -----  
@@ -82,6 +97,6 @@ Reverse-computing lag time based on adjusted memory...
 lag = 91 sec  
 maximum lag = 163 sec  
 Computing storage retention : 124 TB  
-Storage requirement per broker node : 42188 GB  
------ Computation complete -----  
+Storage requirement per broker node : 42188 GB   
+----- Computation complete -----
 
