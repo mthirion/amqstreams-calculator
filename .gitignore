@@ -35,7 +35,8 @@ pom.xml.releaseBackup
 pom.xml.versionsBackup
 release.properties
 
-# App
-calculator-ui/node_modules
-calculator-backend/target
-amqstream_calc.sh
+# Node
+**/node_modules/
+
+# Binaries
+*.sh

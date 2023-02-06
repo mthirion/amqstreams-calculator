@@ -841,7 +841,7 @@ class CalcForm extends Component {
 
     console.log(payload);
     
-    fetch('http://localhost:8090/api/kafkasizing', {
+    fetch('http://localhost:8090/api/amqstreamssizing', {
       method: 'POST',
       body: JSON.stringify(payload),
       headers: {
