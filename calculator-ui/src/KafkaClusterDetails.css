@@ -15,6 +15,14 @@ div.planeright {
     margin: 5px;
 }
 
+div.connect {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: stretch;
+    border: 5px solid green;
+}
+
 div.settings {
     display: flex;
     flex-direction: row;

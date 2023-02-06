@@ -53,8 +53,14 @@ class CalcForm extends Component {
     this.state.req_margin=25;
 
     this.state.req_mm=false;
-    this.state.req_retention=5;
+    this.state.req_mmlimit=16;
+    this.state.req_mmtol=0;
+    this.state.req_kc=false;
+    this.state.req_kclimit=16;
+    this.state.req_kctasks=1;
+    this.state.req_kctol=0;
 
+    this.state.req_retention=5;
     this.state.req_ssl = false;
     this.state.req_compaction = false;
     this.state.req_useshare = false;
@@ -85,6 +91,10 @@ class CalcForm extends Component {
     this.state.resp_avglag=0;
     this.state.resp_maxlag=0;
     this.state.resp_overload={};
+
+    this.state.resp_mmworkers=2;
+    this.state.resp_mmcpu=16;
+    this.state.resp_mmmem=500;
     
   }  
 
@@ -109,6 +119,11 @@ class CalcForm extends Component {
         document.getElementById("lagvaldiv").hidden = true;
         document.getElementById("lag-pod").checked = true;
         document.getElementById("cpusharediv").hidden=true;
+        document.getElementById("mmcpulimit").disabled=true;
+        document.getElementById("kccpulimit").disabled=true;
+        document.getElementById("kctasks").disabled=true;
+        document.getElementById("mmnode").disabled=true;
+        document.getElementById("kcnode").disabled=true;
     }
   }
 
@@ -363,16 +378,44 @@ class CalcForm extends Component {
                 </div>   
 
                 <br/>
-                <div class="frame" id="mirrormaker">
+                <div class="frame" id="connectors">
                     <div class="form">
-                        <h2>Mirror Maker</h2> <br/>                        
-                        <input class="ex-space"  type="checkbox" id="usemm" name="usemm" onClick={this.enableMM}/>  
-                        <label class="label-space" for="usemm">Deploy MirrorMaker 2</label>                                              
+                        <h2>Kafka Connectors</h2> <br/>                        
+                        <input class="ex-space"  type="checkbox" id="usemm" name="usemm" onChange={this.enableMM}/>  
+                        <label class="label-space" for="usemm">Size MirrorMaker 2</label>
+                        <label class="ex-space" for="mmcpulimit">Worker limit </label>     
+                        <input class="ha-space" type="number" size="5" name="mmcpulimit" id="mmcpulimit" min="2" max="24" defaultValue="16" />  
+                        <label class="label-space" for="mmcpulimit">vcpu</label>   <br/>
+                        <label class="ex-space-align-end" for="mmnode">Node tolerance</label>
+                        <input class="ha-space" type="number" size="3" name="mmnode" id="mmnode" min="0" max="2" defaultValue="0" /> 
+                        <br/><br/>
+                        <input class="ex-space"  type="checkbox" id="usekc" name="usekc" onChange={this.enableKC}/>  
+                        <label class="label-space" for="usekc">Size KafkaConnect</label>
+                        <label class="ex-space" for="mmcpulimit">Worker limit </label>     
+                        <input class="ha-space" type="number" size="5" name="kccpulimit" id="kccpulimit" min="2" max="24" defaultValue="16" />  
+                        <label class="label-space" for="kccpulimit">vcpu</label> 
+                        <label class="ex-space-align-end" for="kcnode">Node tolerance</label>
+                        <input class="ha-space" type="number" size="3" name="kcnode" id="kcnode" min="0" max="2" defaultValue="0" /> 
+                        <label class="ex-space-align-end" for="kctasks">Number of tasks</label>     
+                        <input class="ha-space" type="number" size="10" name="kctasks" id="kctasks" min="1" max="1000" defaultValue="50" />  
+                        <label class="ex-space-align-end" hidden for="kcoverride">Parallel overrides </label>     
+                        <input class="ha-space" type="number" size="10" name="kcoverride" id="kcoverride" min="1" max="10" defaultValue="2" disabled hidden/>                                                                  
                     </div>     
                      
                     <div class="doc">
-                        <h2 class="doc">How to configure MM ?</h2> <br/>
-                        <p>TO DO<br/>    
+                        <h2 class="doc">How to parameterize the connectors ?</h2> <br/>
+                        <p>A KafkaConnect cluster is a group of worker nodes onto which are deployed a set of connectors, each executing tasks.  
+                        The best practice is to set the total number of tasks to the total number of partitions to work on. <br/>
+                        
+                        For MirrorMaker, the approach is a bit different and it will leverage the degree of parallelism of the main cluster.<br/>  
+                        
+                        The Worker limit is the maximum number of vCPU that a single node can have.<br/>
+                        With a default setup, the calculator will set a minimum number of worker node to 2 for high availability.  
+                        This doesn't guarantee that the entire workload can be supported by the single remaining node.  
+                        Also, a node might have to be put under maintenance for mulitple reasons.  The cluster should be able to support the entire workload
+                        still with a high availability architecture in those situations as well. <br/>
+                        The node tolerance is there to cover those capabilities. 
+                        A node tolerance of 1 will guarantee a minimum of 3 worker nodes in the cluster with the workload supportabe by only 2 of them.
                         </p>                  
                     </div>                    
                 </div>
@@ -475,7 +518,16 @@ class CalcForm extends Component {
 
                         cluster_maxlag={this.state.resp_maxlag}
                         cluster_avglag={this.state.resp_avglag}
+
+                        mm_enabled={this.state.req_mm}
+                        mm_workers={this.state.resp_mmworkers}
+                        mm_cpu={this.state.resp_mmcpu}
+                        mm_mem={this.state.resp_mmmem}
                         
+                        kc_enabled={this.state.req_kc}
+                        kc_workers={this.state.resp_kcworkers}
+                        kc_cpu={this.state.resp_kccpu}
+                        kc_mem={this.state.resp_kcmem}
                     />
                 </div>
             </div>
@@ -713,6 +765,34 @@ class CalcForm extends Component {
     }
       
   }
+
+  enableMM = (e) => {
+    
+    if (e.target.checked) {
+        document.getElementById("mmcpulimit").disabled=false;
+        document.getElementById("mmnode").disabled=false;
+    }
+    else {
+        document.getElementById("mmcpulimit").disabled=true; 
+        document.getElementById("mmnode").disabled=true;
+    }
+    
+  }
+  enableKC = (e) => {
+    
+    if (e.target.checked) {
+        document.getElementById("kccpulimit").disabled = false;
+        document.getElementById("kctasks").disabled = false;
+        document.getElementById("kcnode").disabled=false;
+    }
+    else {
+        document.getElementById("kccpulimit").disabled = true; 
+        document.getElementById("kctasks").disabled = true;
+        document.getElementById("kcnode").disabled=true;
+    }
+    
+  }  
+
   callKafkaCalculator = () => {
 
 
@@ -743,6 +823,13 @@ class CalcForm extends Component {
         margin: this.state.req_margin,
 
         mm: this.state.req_mm,
+        mmcpu: this.state.req_mmcpulimit,
+        mmtol: this.state.req_mmtol,
+        kc: this.state.req_kc,
+        kccpu: this.state.req_kccpulimit,
+        kctasks: this.state.req_kctasks,
+        kctol: this.state.req_kctol,
+
         retention: this.state.req_retention,
         limit: this.state.req_limit,
         ssl: this.state.req_ssl,
@@ -785,6 +872,18 @@ class CalcForm extends Component {
           this.state.resp_maxthroughput=data.maxthroughput;
           this.state.resp_avglag=data.avglag;
           this.state.resp_maxlag=data.maxlag;
+
+          if (data.mirror) {
+            this.state.resp_mmworkers=data.mirror.workers;
+            this.state.resp_mmcpu=data.mirror.cpu;
+            this.state.resp_mmmem=data.mirror.mem;
+          }
+
+          if (data.connect) {
+            this.state.resp_kcworkers=data.connect.workers;
+            this.state.resp_kccpu=data.connect.cpu;
+            this.state.resp_kcmem=data.connect.mem;
+          }
 
           this.state.resp_overload=data.overload;
 
@@ -870,7 +969,6 @@ class CalcForm extends Component {
     this.state.req_deviation = document.getElementById("deviation").value;
     this.state.req_margin = document.getElementById("margin").value;
 
-    this.state.req_mm = document.getElementById("usemm").checked;
     this.state.req_retention = document.getElementById("retention").value;
 
     this.state.req_outthroughput = document.getElementById("outrate").value;
@@ -881,6 +979,14 @@ class CalcForm extends Component {
     this.state.req_useshare=document.getElementById("useshare").checked;
     this.state.req_cpushare = document.getElementById("cpushare").value;
     this.state.req_limit = document.getElementById("maxparts").value;
+
+    this.state.req_mm = document.getElementById("usemm").checked;
+    this.state.req_mmcpulimit = document.getElementById("mmcpulimit").value;
+    this.state.req_mmtol = document.getElementById("mmnode").value;
+    this.state.req_kc = document.getElementById("usekc").checked;
+    this.state.req_kccpulimit = document.getElementById("kccpulimit").value;    
+    this.state.req_kctasks= document.getElementById("kctasks").value; 
+    this.state.req_kctol = document.getElementById("kcnode").value;
   }
 } 
 

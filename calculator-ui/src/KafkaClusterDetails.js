@@ -58,7 +58,8 @@ class KafkaClusterDetails extends Component {
                 }
               </div>              
             </div>     
-            <br/><br/>                 
+            <br/><br/>         
+
             <div class="plane">       
               <h3>Planes details</h3>     
               <div class="planeleft">
@@ -82,6 +83,7 @@ class KafkaClusterDetails extends Component {
                   </tbody>
                 </table>
               </div>
+
               <div class="planeright">
                 <table>
                   <thead>
@@ -104,6 +106,65 @@ class KafkaClusterDetails extends Component {
                 </table>
               </div>
             </div>
+            <br/><br/>
+
+            {(this.props.mm_enabled == true || this.props.kc_enabled == true) &&    
+            <div class="connect">  
+            <h3>Connect</h3>
+
+              {/*Conditional rendering*/}
+              {this.props.mm_enabled == true &&    
+                <div class="planeleft">
+                  <table>
+                    <thead>
+                      <tr>
+                          <th colspan="3">Mirror Maker</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                          <td>Number of node</td>
+                          <td>CPU per node</td>
+                          <td>Memory per node</td>
+                      </tr>
+                      <tr>
+                          <td>{this.props.mm_workers}</td>                  
+                          <td>{this.props.mm_cpu}</td>
+                          <td>{this.props.mm_mem} MB</td>
+                      </tr>                
+                    </tbody>
+                  </table>
+                </div>
+              } 
+
+              {/*Conditional rendering*/}
+              {this.props.kc_enabled == true &&    
+                <div class="planeright">
+                  <table>
+                    <thead>
+                      <tr>
+                          <th colspan="3">KafkaConnect</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                          <td>Number of node</td>
+                          <td>CPU per node</td>
+                          <td>Memory per node</td>
+                      </tr>
+                      <tr>
+                          <td>{this.props.kc_workers}</td>                  
+                          <td>{this.props.kc_cpu}</td>
+                          <td>{this.props.kc_mem} MB</td>
+                      </tr>                
+                    </tbody>
+                  </table>
+                </div>
+              } 
+            </div>
+            } 
+
+
             <br/><br/>
             <div class="settings"> 
               <h3>Cluster settings</h3> 

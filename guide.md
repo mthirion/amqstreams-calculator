@@ -181,24 +181,29 @@ However, on a cluster of 10 nodes, we can’t simply allocate 1/10th of that qua
 2. We need to respect the fault tolerance factor, which means the ability to support the full workload with a reduced number of nodes
 
 ## KafkaConnect technology
-KafkaConnect is a standardized technology to integrate with Kafka, which leverages the Kafak Producer and Consumer API.  
-It follows an "application server clustering" pattern.  Connectors are deployed on a node that can be scaled out, so a KafkaConnect node can run one or more "connector", which themselves can run "tasks" (or processes).     
-For high availability, a minimum of 2 nodes is therefore recommended.
+KafkaConnect is a standardized connectivity mechanism that leverages the native Kafka Producer and Consumer API.  
+It consists in a group of Wroker nodes onto which mulitple Connectors can be deployed, each connector possibly acting as a Source or a Sink, and each of them able to run tasks.  
+For high availability, a minimum of 2 Worker nodes is required.  
 
-To properly evaluate the resources required for a KafkaConnect-based client cluster is key because Mirror Maker 2, the native solution that allows the replication of data between multiple Kafka clusters, entirely relies on this technology.  It's a crucial computation because only the optimal performance of the Mirror Maker 2 cluster can (somehow) guarantee that the replication is following at near real time.
+Mirror Maker 2, the native solution that allows the replication of data between multiple Kafka clusters, entirely relies on this technology.  Properly sizing Mirror Maker is crucial because only the optimal performance can (somehow) guarantee a near real time replication of the data.  
 
-The replication of data between Kafak cluster is an important feature because Kafka relies on a Zookeeper database to maintain its state, which has very strict network latency requirements, most of the time preventing a Kafka cluster to be stretched across multiple data centers.
+The AMQ Streams control plane has very strict network latency requirements, which most of the time prevent an AMQ Streams cluster to be stretched across multiple data centers.  For that reason, the replication of data between 2 Kafka cluster near real time is a key feature.  
 
-For the reasons exposed above, the sizing will be limited to MirrorMaker, which stands as a Source KafkaConnect connector.
+The KafkaConnect technology doesn't require data persistence, so the resulting processes are more CPU-bound than memory-bound.  For the computation of the memory, we can remember that each task requires about 10MB of java memory, not counting the size of the in-transit data.  
+_For eample, 50 tasks requires 50*10M = 500M of java memory for threading only_
 
-### Mirror Maker 2
-Contrary to the cluster itself, which is more memory and disk bound, Kafka Connect will be CPU bound.  
+### Heavyweight KafkaConnect connectors
+The sizing of a KafkaConnect cluster only indirectly depends on the number of connectors deployed to it, which is more an architectural concern.  
+However, it directly depends on the number of tasks to run.  
+Some KafkaConnect connectors only run one task (i.e. Debezium).  
+Others run mulitple tasks, corresponding to consumers belonging to the same consumer group.  As a consequence, the best practive for the latter case is to set the number of tasks to the number of partitions to work on.  
+Pure parallelism would require 1 vcpu per task.  however, it's common to use a limit of "x tasks per vcpu" instead to not oversize the cluser and end up with unnecessary costs.  
+The Splunk connector, for instance, expecting to process a very high throughput, recommends 2 tasks per vcpu.  This means that a 2 sockets, 6 cores per socket, bi-threaded host would be able to process a maximum of 48 tasks.
 
-The rules used to evaluate the size of Mirror Maker and the underlying KafkaConnect cluster are:
-- We always need a minimum of 2 nodes for high availability
-- The number of Tasks equals the number of partitions to replicate
-- 1 CPU thread is requird for each 2 tasks  
-_A 2 sockets, 6 cores per socket, bi-threaded server would be able to process a maximum of 48 tasks_
-- Each task requires 10MB of java memory, not counting the size of the in-transit data.  
-_50 tasks requires 50*10M = 500M of java memory for threading only_
+### Mirror Maker
+
+Mirror Maker is rather a lightweight connector.  Using the rule of 1 vcpu for each 2 tasks would lead to gigantic clusters, as the total number of tasks required is equal to the total number of partition in the cluster.  
+
+Another approach, for this particular connector, is to just apply a total number of vcpu roughly equals to the number of vcpu in the cluster, in order to achieve a near real time processing independently of the speed of the actual cluster.
+
 

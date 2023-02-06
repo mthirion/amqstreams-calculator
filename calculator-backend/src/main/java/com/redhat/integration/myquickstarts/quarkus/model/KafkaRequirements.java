@@ -26,7 +26,14 @@ public class KafkaRequirements {
     private Integer margin;         // %
 
     private Boolean mm;             // true|false
-    private Integer retention;      // days
+    private Integer mmcpu; 
+    private Integer mmtol;           
+    private Boolean kc;             // true|false
+    private Integer kccpu; 
+    private Integer kctasks;
+    private Integer kctol; 
+
+    private Integer retention;      // days    
 
     private boolean ssl=false;
     private boolean compaction=false;
@@ -234,6 +241,53 @@ public class KafkaRequirements {
         this.useshare = useshare;
     }
 
+    public Integer getMmcpu() {
+        return mmcpu;
+    }
+
+    public void setMmcpu(Integer mmcpu) {
+        this.mmcpu = mmcpu;
+    }    
+    public Boolean getKc() {
+        return kc;
+    }
+
+    public void setKc(Boolean kc) {
+        this.kc = kc;
+    }
+
+    public Integer getKccpu() {
+        return kccpu;
+    }
+
+    public void setKccpu(Integer kccpu) {
+        this.kccpu = kccpu;
+    }
+
+    public Integer getKctasks() {
+        return kctasks;
+    }
+
+    public void setKctasks(Integer kctasks) {
+        this.kctasks = kctasks;
+    }
+
+    public Integer getMmtol() {
+        return mmtol;
+    }
+
+    public void setMmtol(Integer mmtol) {
+        this.mmtol = mmtol;
+    }
+
+    public Integer getKctol() {
+        return kctol;
+    }
+
+    public void setKctol(Integer kctol) {
+        this.kctol = kctol;
+    }
+
     @Override
     public String toString() {
 
@@ -261,6 +315,11 @@ public class KafkaRequirements {
 
         return str;
     }
+
+
+
+
+
  
 
 }

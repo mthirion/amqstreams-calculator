@@ -244,7 +244,6 @@ public class KafkaCalculator {
         
 
         // set storage retention
-        //    + TODO: recommendation per node, based on fault tolerance and margin (unbalanced cluster)
         
         double sto = computeStorage(req.getRetention(), req.getInthroughput(), req.getReplicas());
         double nodesto = sto / (nbNodes - req.getThroughputtolerance()) ;
@@ -270,6 +269,60 @@ public class KafkaCalculator {
         desc.setSsl(req.isSsl());
         desc.setCompaction(req.isCompaction());
 
+
+        /*  *********************************
+            Computing the Mirror Maker sizing
+            Same CPU as for the broker
+            */
+        
+        if (req.getMm()) {
+            logger.info("Mirror Maker will be sized");
+            KafkaConnectDesc mm = new KafkaConnectDesc();
+
+            int mmcpu = ndesc.getCpu() * ndesc.getNumnodes();
+            int mmlimit= req.getMmcpu();
+
+            logger.info("Mirror Maker requires " + mmcpu + " vcpu with an upper bound of " + mmlimit);
+            int mmnodes = (int)Math.ceil((double)mmcpu / mmlimit);
+            if (mmnodes < 2) mmnodes=2;
+            mmcpu = (int)Math.ceil((double)mmcpu / mmnodes); 
+            if (mmcpu % 2 == 1) mmcpu++;
+            logger.info("Mirro Maker will have " + mmnodes + " nodes of " + mmcpu + " each, totalizing " + mmnodes*mmcpu + " vpcu");
+            
+            mm.setWorkers(mmnodes + req.getMmtol());
+            mm.setCpu(mmcpu);
+            mm.setMem(computeMM(mmcpu));
+            mm.setTasks(req.getNbpartitions());
+
+            desc.setMirror(mm);
+        }
+        
+
+        /*  **************************************
+            Evaluating a KafkaConnect cluster size
+            */    
+        
+        if (req.getKc()) {
+            logger.info("Kafka Connect will be sized");
+            KafkaConnectDesc kc = new KafkaConnectDesc();
+
+            int tasks = req.getKctasks();
+            int kcpu = tasks / 2;  // 2 tasks per vcpu
+            int kclimit= req.getKccpu();
+            
+            logger.info("KafkaConnect is configured for " + tasks + " tasks => requires " + kcpu + " vCPU with an upper bound of " +kclimit);
+            int knodes = (int)Math.ceil((double)kcpu / kclimit);
+            if (knodes < 2) knodes=2;
+            kcpu = (int)Math.ceil((double)kcpu / knodes); 
+            if (kcpu % 2 == 1) kcpu++;
+            logger.info("KafkaConnect cluster will have " + knodes + " nodes of " + kcpu + " each, totalizing " + knodes*kcpu + " vpcu");
+
+            kc.setWorkers(knodes + req.getKctol());
+            kc.setCpu(kcpu);
+            kc.setMem(computeMM(kcpu));
+
+            desc.setConnect(kc);
+        }        
 
         logger.info("----- Computation complete -----" );
         return desc;
@@ -320,5 +373,16 @@ public class KafkaCalculator {
         total = total * replicas * retention;
         // returning GB instead of MB  
         return total/1024;
-    }    
+    }
+
+    private static int computeMM(int cpu) {
+        int memory = 500;
+        if (cpu >= 2) memory = 1024;
+        if (cpu >= 4) memory = 2048;
+        if (cpu >= 8) memory = 4096;
+        if (cpu > 16) memory = 8192;
+
+        return memory;
+    }
+    
 }

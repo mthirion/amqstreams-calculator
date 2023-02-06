@@ -27,6 +27,9 @@ public class KafkaClusterDesc {
 
     private KafkaNodeDesc node;
 
+    private KafkaConnectDesc connect;
+    private KafkaConnectDesc mirror;
+
     
     private KafkaZkDesc zk;
     //private KafkaNodeDesc mm;
@@ -165,5 +168,21 @@ public class KafkaClusterDesc {
 
     public void setNodeStorage(String nodeStorage) {
         this.nodeStorage = nodeStorage;
+    }
+
+    public KafkaConnectDesc getConnect() {
+        return connect;
+    }
+
+    public void setConnect(KafkaConnectDesc connect) {
+        this.connect = connect;
+    }
+
+    public KafkaConnectDesc getMirror() {
+        return mirror;
+    }
+
+    public void setMirror(KafkaConnectDesc mirror) {
+        this.mirror = mirror;
     }
 }

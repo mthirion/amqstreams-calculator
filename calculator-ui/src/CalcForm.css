@@ -100,6 +100,10 @@ div.align-custthroughput {
 .ex-space-align-pp {
     margin-left: 67px;
 }
+
+.ex-space-align-end {
+    margin-left: 200px;
+}
 .ch-space {
     float: left;
     margin-left: 20px;
