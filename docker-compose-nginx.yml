@@ -1,0 +1,13 @@
+---
+version: "3"
+
+services:
+  backend:
+    build: ./calculator-backend
+  nginx:
+    build:
+      context: .
+      args:
+      - REACT_APP_BACKEND_URL=/api
+    ports:
+    - 3000:3000
