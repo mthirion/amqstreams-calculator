@@ -1,0 +1,12 @@
+---
+version: "3"
+
+services:
+  backend:
+    build: ./calculator-backend
+    ports:
+    - 8090:8090
+  frontend:
+    build: ./calculator-ui
+    ports:
+    - 3000:3000
