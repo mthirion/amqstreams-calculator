@@ -700,7 +700,11 @@ class CalcForm extends Component {
     this.adjustPartitionRatio(e);
   }
   adjustPartitionRatio = (e) => {
-    document.getElementById("avgpartitions").value = document.getElementById("nbpartitions").value / document.getElementById("cgtopics").value ;
+    var avgpartitionstmp = parseInt(document.getElementById("nbpartitions").value / document.getElementById("cgtopics").value) ;
+    if ( avgpartitionstmp === 0) 
+	  document.getElementById("avgpartitions").value = 1 ;
+    else
+    	document.getElementById("avgpartitions").value = avgpartitionstmp ;
   }
   updateDeviation = (e) => {
       if (e.target.id==="deviation") {   // the deviation percentage has changed, we adjust throughput and msg/sec
@@ -802,7 +806,7 @@ class CalcForm extends Component {
         inthroughput: this.state.req_inthroughput,
         outthroughput: this.state.req_outthroughput,
 
-        nbpartitions:this.state.req_nbpartitions,
+        nbpartitions: this.state.req_nbpartitions,
         avgpartitions: this.state.req_avgpartitions,
         nbtopics: this.state.req_nbtopics,
         replicas: this.state.req_replicas,
@@ -840,7 +844,8 @@ class CalcForm extends Component {
       }
 
     console.log(payload);
-    
+    console.log(JSON.stringify(payload));
+
     fetch((process.env.REACT_APP_BACKEND_URL || 'http://localhost:8090/api') + '/amqstreamssizing', {
       method: 'POST',
       body: JSON.stringify(payload),
@@ -917,7 +922,12 @@ class CalcForm extends Component {
     /* Partitions and topics */
     this.state.req_avgpartitions = document.getElementById("avgpartitions").value;
     this.state.req_nbtopics = document.getElementById("nbtopics").value;
-    this.state.req_nbpartitions = document.getElementById("nbpartitions").value;  
+
+    console.log("here" + document.getElementById("nbpartitions").value + " -- " + this.state.req_nbtopics);
+    if (parseInt(document.getElementById("nbpartitions").value) < parseInt(this.state.req_nbtopics))
+	  this.state.req_nbpartitions = this.state.req_nbtopics
+    else 
+	  this.state.req_nbpartitions = document.getElementById("nbpartitions").value;  
 
     /* Network Speed */
     if (document.getElementById("net-speed-1").checked) this.state.req_netspeed = 1;
